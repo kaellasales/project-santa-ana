@@ -1,0 +1,94 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+*.manifest
+*.spec
+*.pyd
+*.pyc
+
+# Virtualenv / environment
+.env
+.venv/
+venv/
+env/
+ENV/
+*.env
+
+# Poetry
+poetry.lock
+
+# ========================
+# Alembic
+# ========================
+alembic/versions/*.pyc
+alembic/versions/__pycache__/
+*.sqlite3
+
+# ========================
+# FastAPI / general
+# ========================
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# ========================
+# IDE / Editor
+# ========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ========================
+# Docker
+# ========================
+# Ignore Docker build artifacts
+**/Dockerfile.*
+docker-compose.override.yml
+docker-compose.override.yaml
+*.log
+*.pid
+*.swp
+*.tmp
+*.bak
+*.cache
+*.out
+
+# Ignore volumes (if mounted)
+volumes/
+
+# ========================
+# MacOS / Linux
+# ========================
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# ========================
+# Pytest / testing
+# ========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.cache/
+
+# ========================
+# Misc
+# ========================
+*.bak
+*.backup
+*.orig
+*.rej
+
+setup.md
+Test.md

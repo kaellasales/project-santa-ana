@@ -1,11 +1,12 @@
 set unstable
-
 set shell := ["bash", "-cu"]
 
+
+PROJECT_NAME := "santa_ana"
 COMPOSE_FILES := "docker-compose.yml"
 
 compose *args:
-    docker compose -p santa_ana -f {{COMPOSE_FILES}} {{args}}
+    docker compose -p {{PROJECT_NAME}} -f {{COMPOSE_FILES}} {{args}}
 
 build:
     just compose build
@@ -26,11 +27,16 @@ exec service *cmd:
 shell:
     just exec fast-api /bin/bash
 
-
-django command:
-    just exec fast-api python manage.py {{command}}
-
-
 test *args:
     just exec fast-api poetry run pytest {{args}}
 
+rebuild:
+    just stop
+    just compose build
+    just start
+
+makemigrations *args:
+    docker compose -p {{PROJECT_NAME}} -f {{COMPOSE_FILES}} exec fast-api poetry run alembic revision --autogenerate -m "{{args}}"
+
+migrate:
+    just exec fast-api poetry run alembic upgrade head

@@ -22,7 +22,7 @@ class Produto(Base):
     id = Column(Integer, primary_key=True, index=True)
     codigo_barra = Column(String(50), unique=True, index=True, nullable=True)
     nome = Column(String(100), index=True, nullable=False)
-    preco_compra = Column(Numeric(10,2), nullable=False)
+    preco_compra = Column(Numeric(10,2), nullable=True)
     preco_venda = Column(Numeric(10,2), nullable=False)
     estoque = Column(Integer, nullable=False, default=0)
     categoria_id = Column(Integer, ForeignKey("categorias.id", ondelete="RESTRICT"), nullable=False)

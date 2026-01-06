@@ -15,7 +15,7 @@ class CategoriaService:
     def get(self, categoria_id: int):
         categoria = self.repository.get(categoria_id)
         if not categoria:
-            raise HTTPException(status_code=404, detail="Categoria não encontrada")
+            raise HTTPException(status_code=404, detail="Categoria não encontrada.")
         return categoria
 
     def buscar_por_nome(self, nome: str):

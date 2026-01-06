@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import categoria
+from app.routers import categoria, produto
 
 app = FastAPI(
     title="API Farmácia Santa Ana",
@@ -13,6 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(categoria.router, prefix="/categorias", tags=["Categorias"])
+app.include_router(produto.router, prefix="/produtos", tags=["Produtos"])
 
 @app.get("/")
 def root():

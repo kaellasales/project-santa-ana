@@ -68,7 +68,7 @@ def test_buscar_categoria_inexistente(client):
     response = client.get("/categorias/9999")
     
     assert response.status_code == 404
-    assert "não encontrada" in response.json()["detail"]
+    assert "Recurso não encontrado" in response.json()["detail"]
 
 def test_buscar_categoria_por_nome(client):
     """Testa filtrar categorias pelo nome"""

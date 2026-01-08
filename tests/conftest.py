@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 
 from app.core.database import Base, get_db
-from app.core.models import Categoria  
+from app.models.categoria import Categoria  
 from app.main import app
 
 SQLALCHEMY_TEST_DATABASE_URL = "sqlite:///:memory:"

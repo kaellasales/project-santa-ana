@@ -7,26 +7,33 @@ class Base(DeclarativeBase):
 T = TypeVar("T", bound=Base)
 
 class BaseRepository(Generic[T]):
-    def __init__(self, db: Session, model: Type[T]):
-        self.db = db
+    def __init__(self, model: Type[T]):
         self.model = model
 
-    def get(self, id: int) -> T | None:
-        return self.db.query(self.model).filter(self.model.id == id).first()
+    def get(self, db: Session, id: int) -> T | None:
+        return db.query(self.model).filter(self.model.id == id).first()
 
-    def list(self, skip: int = 0, limit: int = 100) -> list[T]:
-        return self.db.query(self.model).offset(skip).limit(limit).all()
+    def list(self, db: Session, skip: int = 0, limit: int = 100) -> list[T]:
+        return db.query(self.model).offset(skip).limit(limit).all()
 
-    def create(self, obj_in: dict) -> T:
+    def create(self, db: Session, obj_in: dict) -> T:
         obj = self.model(**obj_in)
-        self.db.add(obj)
-        self.db.commit()
-        self.db.refresh(obj)
+        db.add(obj)
+        db.commit()
+        db.refresh(obj)
         return obj
 
-    def delete(self, id: int) -> T | None:
-        obj = self.get(self.db, id)
+    def update(self, db: Session, obj: T, obj_in: dict) -> T | None:
+        for field, value in obj_in.items():
+            setattr(obj, field, value)
+
+        db.commit()
+        db.refresh(obj)
+        return obj
+        
+    def delete(self, db: Session, id: int) -> T | None:
+        obj = self.get(id)
         if obj:
-            self.db.delete(obj)
-            self.db.commit()
+            db.delete(obj)
+            db.commit()
         return obj

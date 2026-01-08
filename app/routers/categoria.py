@@ -7,22 +7,20 @@ from app.services.categoria import CategoriaService
 from app.core.models import Categoria
 
 router = APIRouter()
-
-def get_categoria_service(db: Session = Depends(get_db)) -> CategoriaService:
-    repo = CategoriaRepository(db, Categoria) 
-    return CategoriaService(repo)
+repo = CategoriaRepository()
+service = CategoriaService(repo)
 
 @router.get("/", response_model=list[CategoriaResponse])
-def listar_categorias(nome: str | None = None, service: CategoriaService = Depends(get_categoria_service)):
+def listar_categorias(nome: str | None = None, db:Session=Depends(get_db)):
     if nome:
-        return service.buscar_por_nome(nome)
-    return service.list()
+        return service.buscar_por_nome(db, nome)
+    return service.list(db)
 
 @router.post("/", response_model=CategoriaResponse)
-def criar_categoria(categoria: CategoriaCreate, service: CategoriaService = Depends(get_categoria_service)):
-    return service.create(categoria)
+def criar_categoria(categoria: CategoriaCreate, db:Session=Depends(get_db)):
+    return service.create(db, categoria)
 
 @router.get("/{categoria_id}", response_model=CategoriaResponse)
-def obter_categoria(categoria_id: int, service: CategoriaService = Depends(get_categoria_service)):
-    return service.get(categoria_id)
+def obter_categoria(categoria_id: int, db:Session=Depends(get_db)):
+    return service.get(db, categoria_id)
 

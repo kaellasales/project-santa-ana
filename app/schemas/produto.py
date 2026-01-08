@@ -5,7 +5,6 @@ from decimal import Decimal
 
 class ProdutoBase(BaseModel):
     nome: str = Field(..., min_length=1, max_length=100)
-    codigo_barra: str = Field(...)
     preco_venda: Decimal = Field(..., gt=0)
     preco_compra: Optional[Decimal] = Field(None, gt=0)
     categoria_id: int
@@ -15,6 +14,12 @@ class ProdutoBase(BaseModel):
 class ProdutoCreate(ProdutoBase):
     pass 
 
+class ProdutoUpdate(BaseModel):
+    nome: Optional[str] = Field(None, min_length=1, max_length=100)
+    preco_venda: Optional[Decimal] = Field(None, gt=0)
+    preco_compra: Optional[Decimal] = Field(None, gt=0)
+    categoria_id: Optional[int]
+    codigo_barra: Optional[str] = Field(None, max_length=50)
 
 class ProdutoResponse(ProdutoBase):
     id: int

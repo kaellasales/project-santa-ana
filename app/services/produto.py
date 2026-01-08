@@ -1,8 +1,7 @@
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.repositories.produto import ProdutoRepository
 from app.schemas.produto import ProdutoCreate, ProdutoUpdate
-
+from app.core.exceptions import ProdutoNotFoundError
 
 class ProdutoService:
     def __init__(self, repository: ProdutoRepository):
@@ -14,22 +13,22 @@ class ProdutoService:
     def list(self, db:Session):
         return self.repository.list(db)
 
-    def get(self, db: Session, produto_id: int):
+    def _get_or_raise(self, db:Session, produto_id: int):
         produto = self.repository.get(db, produto_id)
         if not produto:
-            raise HTTPException(status_code=404, detail="Produto não encontrado.")
+            raise ProdutoNotFoundError()
         return produto
+
+    def get(self, db: Session, produto_id: int):
+        return self._get_or_raise(db, produto_id)
     
     def update(self, db:Session, produto_id: int, update_produto: ProdutoUpdate):
-        produto = self.repository.get(db, produto_id)
-        if not produto:
-            raise HTTPException(status_code=404, detail="Produto não encontrado")
+        produto = self._get_or_raise(db, produto_id)
+        update_data = update_produto.model_dump(exclude_unset=True)
         return self.repository.update(db, produto, update_produto)
 
     def delete(self, db:Session, produto_id: int):
-        produto = self.repository.get(db, produto_id)
-        if not produto:
-            raise HTTPException(status_code=404, detail="Produto não encontrado")
+        produto = self._get_or_raise(db, produto_id)
         return self.repository.delete(db, produto_id)
     
     def buscar_por_nome(self, db:Session, nome: str):

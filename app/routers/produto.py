@@ -5,11 +5,11 @@ from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from app.repositories.produto import ProdutoRepository
 from app.services.produto import ProdutoService
 from app.core.models import Produto
+from app.core.exceptions import ProdutoNotFoundError
 
 router = APIRouter()
 repo = ProdutoRepository()
 service = ProdutoService(repo)
-
 
 @router.get("/", response_model=list[ProdutoResponse])
 def listar_produtos(nome: str | None = None, db: Session = Depends(get_db)):

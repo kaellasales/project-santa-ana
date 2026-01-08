@@ -1,4 +1,4 @@
-from app.core.models import Produto as produtoModel
+from app.models.produto import Produto as produtoModel
 from sqlalchemy.orm import Session
 from .base import BaseRepository
 

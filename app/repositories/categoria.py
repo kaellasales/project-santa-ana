@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.core.models import Categoria as CategoriaModel
+from app.models.categoria import Categoria as CategoriaModel
 from app.schemas.categoria import CategoriaCreate
 from .base import BaseRepository
 

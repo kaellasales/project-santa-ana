@@ -4,7 +4,7 @@ from app.core.database import get_db
 from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from app.repositories.produto import ProdutoRepository
 from app.services.produto import ProdutoService
-from app.core.models import Produto
+from app.models.produto import Produto
 from app.core.exceptions import ProdutoNotFoundError
 
 router = APIRouter()

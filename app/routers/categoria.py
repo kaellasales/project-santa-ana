@@ -4,7 +4,7 @@ from app.core.database import get_db
 from app.schemas.categoria import CategoriaCreate, CategoriaResponse
 from app.repositories.categoria import CategoriaRepository
 from app.services.categoria import CategoriaService
-from app.core.models import Categoria
+from app.models.categoria import Categoria
 
 router = APIRouter()
 repo = CategoriaRepository()

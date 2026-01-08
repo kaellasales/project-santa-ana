@@ -9,6 +9,7 @@ class ProdutoBase(BaseModel):
     preco_compra: Optional[Decimal] = Field(None, gt=0)
     categoria_id: int
     codigo_barra: Optional[str] = Field(None, max_length=50)
+    estoque: int = Field(ge=0)
 
 
 class ProdutoCreate(ProdutoBase):

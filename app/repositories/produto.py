@@ -9,3 +9,19 @@ class ProdutoRepository(BaseRepository[produtoModel]):
 
     def buscar_por_nome(self, db:Session, nome: str):
         return db.query(produtoModel).filter(produtoModel.nome.ilike(f"%{nome}%")).all()
+
+    def alterar_estoque(self, db: Session, produto_id: int, delta: int):
+        """
+        Muda o estoque de forma atômica.
+        delta: positivo para entrada, negativo para saída.
+        Retorna: True se alterou, False se produto não existe.
+        """
+        stmt = (
+            update(Produto)
+            .where(Produto.id == produto_id)
+            .values(estoque=Produto.estoque + delta) # A mágica acontece aqui!
+            .execution_options(synchronize_session="fetch") # Atualiza a sessão do SQLAlchemy
+        )
+        result = db.execute(stmt)
+        db.flush() 
+        return result.rowcount > 0

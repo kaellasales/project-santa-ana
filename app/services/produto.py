@@ -33,3 +33,23 @@ class ProdutoService:
     
     def buscar_por_nome(self, db:Session, nome: str):
         return self.repository.buscar_por_nome(db, nome)
+
+    def dar_baixa_estoque(self, db: Session, produto_id: int, quantidade: int):
+        if quantidade <= 0:
+            raise ValueError("Quantidade deve ser maior que zero")
+
+        try:
+            sucesso = self.repository.alterar_estoque(db, produto_id, -quantidade)
+            
+            if not sucesso:
+                raise ProdutoNotFoundError()
+                
+            db.commit() 
+            
+            return self.repository.get(db, produto_id)
+
+        except IntegrityError as e:
+            db.rollback()
+            if "check_estoque_non_negative" in str(e.orig):
+                raise EstoqueInsuficienteError("Não há estoque suficiente para esta venda.")
+            raise e 

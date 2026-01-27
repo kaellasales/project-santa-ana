@@ -1,14 +1,21 @@
-# app/core/handlers.py
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError, EstoqueInsuficienteError
+from fastapi import Request
 
 async def handler_geral_404(request, exc: NotFoundError):
     return JSONResponse(
         status_code=404, 
         content={"detail": str(exc) or "Recurso não encontrado"}
     )
+
+async def estoque_insuficiente_handler(request: Request, exc: EstoqueInsuficienteError):
+    return JSONResponse(
+        status_code=409, 
+        content={"message": exc.message, "tipo_erro": "estoque_insuficiente"},
+    )
+
 def setup_exception_handlers(app: FastAPI):
     """Registra todos os handlers na aplicação FastAPI"""
     app.add_exception_handler(NotFoundError, handler_geral_404)
-
+    app.add_exception_handler(EstoqueInsuficienteError, estoque_insuficiente_handler)

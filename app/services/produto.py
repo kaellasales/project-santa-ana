@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.repositories.produto import ProdutoRepository
 from app.schemas.produto import ProdutoCreate, ProdutoUpdate
-from app.core.exceptions import ProdutoNotFoundError
+from app.core.exceptions import ProdutoNotFoundError, EstoqueInsuficienteError
 
 class ProdutoService:
     def __init__(self, repository: ProdutoRepository):
@@ -25,7 +26,7 @@ class ProdutoService:
     def update(self, db:Session, produto_id: int, update_produto: ProdutoUpdate):
         produto = self._get_or_raise(db, produto_id)
         update_data = update_produto.model_dump(exclude_unset=True)
-        return self.repository.update(db, produto, update_produto)
+        return self.repository.update(db, produto, update_data)
 
     def delete(self, db:Session, produto_id: int):
         produto = self._get_or_raise(db, produto_id)

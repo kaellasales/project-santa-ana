@@ -1,7 +1,7 @@
-from app.models.produto import Produto as produtoModel
+from sqlalchemy import update
 from sqlalchemy.orm import Session
+from app.models.produto import Produto as produtoModel
 from .base import BaseRepository
-
 
 class ProdutoRepository(BaseRepository[produtoModel]):
     def __init__(self):
@@ -17,10 +17,10 @@ class ProdutoRepository(BaseRepository[produtoModel]):
         Retorna: True se alterou, False se produto não existe.
         """
         stmt = (
-            update(Produto)
-            .where(Produto.id == produto_id)
-            .values(estoque=Produto.estoque + delta) # A mágica acontece aqui!
-            .execution_options(synchronize_session="fetch") # Atualiza a sessão do SQLAlchemy
+            update(produtoModel)
+            .where(produtoModel.id == produto_id)
+            .values(estoque=produtoModel.estoque + delta)
+            .execution_options(synchronize_session="fetch") 
         )
         result = db.execute(stmt)
         db.flush() 

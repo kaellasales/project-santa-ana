@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.routers import categoria, produto
+from app.routers import categoria, produto, venda, itemVenda
 from app.core.handlers import setup_exception_handlers
+
 app = FastAPI(
     title="API Farmácia Santa Ana",
     description="API para gerenciamento de farmácia.",
@@ -14,6 +15,8 @@ app = FastAPI(
 
 app.include_router(categoria.router, prefix="/categorias", tags=["Categorias"])
 app.include_router(produto.router, prefix="/produtos", tags=["Produtos"])
+app.include_router(venda.router, prefix="/vendas", tags=["vendas"])
+app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"])
 
 @app.get("/")
 def root():

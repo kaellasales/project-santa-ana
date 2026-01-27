@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Numeric, CheckConstraint
+from sqlalchemy import Column, Integer, String,  ForeignKey, Numeric, CheckConstraint
 from app.core.database import Base
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 
 class Produto(Base):
@@ -16,7 +15,8 @@ class Produto(Base):
     categoria_id = Column(Integer, ForeignKey("categorias.id", ondelete="RESTRICT"), nullable=False)
     
     categoria = relationship("Categoria", back_populates="produtos")
-    
+    itens_venda = relationship("ItemVenda", back_populates="produto")
+
     __table_args__ = (
         CheckConstraint('estoque >= 0', name='check_estoque_non_negative'),
     )

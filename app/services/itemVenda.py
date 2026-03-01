@@ -27,21 +27,32 @@ class ItemVendaService:
         return quantidade * preco_unitario
     
     def create(self, db: Session, venda_id: int, item: ItemVendaCreate):
-        self._validar_venda_existe(db, venda_id)
+        venda = self._validar_venda_existe(db, venda_id)
         produto = self._validar_produto_existe(db, item.produto_id)
         
         # Validar estoque
         if produto.estoque < item.quantidade:
             raise ValueError(f"Estoque insuficiente. Disponível: {produto.estoque}")
         
-        subtotal = self._calcular_subtotal(item.quantidade, item.preco_unitario)
+        preco_unitario = float(produto.preco_venda)
+        subtotal = self._calcular_subtotal(item.quantidade, preco_unitario)
         
         dados = item.model_dump()
         dados["venda_id"] = venda_id
         dados["subtotal"] = subtotal
+        dados["preco_unitario"] = preco_unitario
+
+        produto.estoque -= item.quantidade
+        db.add(produto)
+        item_criado = self.repository.create(db, dados)
+
+        db.refresh(venda)
+        venda.total = sum(i.subtotal for i in venda.itens)
+        db.add(venda)
+        db.commit()
+
+        return item_criado
         
-        return self.repository.create(db, dados)
-    
     def list_por_venda(self, db: Session, venda_id: int):
         self._validar_venda_existe(db, venda_id)
         return self.repository.buscar_por_venda(db, venda_id)
@@ -54,17 +65,39 @@ class ItemVendaService:
     
     def update(self, db: Session, item_id: int, dados_atualizacao: ItemVendaUpdate):
         item = self.get(db, item_id)
-        
+        produto = self._validar_produto_existe(db, item.produto_id)
+        venda = self._validar_venda_existe(db, item.venda_id)
+
         if dados_atualizacao.quantidade is not None:
+            diferenca = dados_atualizacao.quantidade - item.quantidade
+            if diferenca > 0 and produto.estoque < diferenca:
+                raise ValueError(f"Estoque insuficiente. Disponível: {produto.estoque}")
+            produto.estoque -= diferenca
+            self.produto_repository.update(db, produto, {"estoque": produto.estoque})
             item.quantidade = dados_atualizacao.quantidade
-        if dados_atualizacao.preco_unitario is not None:
-            item.preco_unitario = dados_atualizacao.preco_unitario
-        
-        # Recalcular subtotal
+
         item.subtotal = self._calcular_subtotal(item.quantidade, item.preco_unitario)
-        
-        return self.repository.update(db, item_id, item.__dict__)
-    
+        self.repository.update(db, item, {"quantidade": item.quantidade, "subtotal": item.subtotal})
+
+        db.refresh(venda)
+        venda.total = sum(i.subtotal for i in venda.itens)
+        self.venda_repository.update(db, venda, {"total": venda.total})
+
+        db.commit()
+        db.refresh(item)
+        return item
+
     def delete(self, db: Session, item_id: int):
         item = self.get(db, item_id)
-        return self.repository.delete(db, item_id)
+        produto = self._validar_produto_existe(db, item.produto_id)
+        venda = self._validar_venda_existe(db, item.venda_id)
+
+        produto.estoque += item.quantidade
+        db.add(produto)
+
+        self.repository.delete(db, item_id)
+
+        db.refresh(venda)
+        venda.total = sum(i.subtotal for i in venda.itens)
+        db.add(venda)
+        db.commit()

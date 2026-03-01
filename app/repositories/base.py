@@ -11,29 +11,52 @@ class BaseRepository(Generic[T]):
         self.model = model
 
     def get(self, db: Session, id: int) -> T | None:
-        return db.query(self.model).filter(self.model.id == id).first()
+        query = db.query(self.model).filter(self.model.id == id)
+        if hasattr(self.model, 'ativo'):
+            query = query.filter(self.model.ativo)
+        return query.first()
 
     def list(self, db: Session, skip: int = 0, limit: int = 100) -> list[T]:
-        return db.query(self.model).offset(skip).limit(limit).all()
+        query = db.query(self.model)
+        if hasattr(self.model, 'ativo'):
+            query = query.filter(self.model.ativo)
+        return query.offset(skip).limit(limit).all()
 
     def create(self, db: Session, obj_in: dict) -> T:
         obj = self.model(**obj_in)
         db.add(obj)
-        db.commit()
+        db.flush()
         db.refresh(obj)
         return obj
 
     def update(self, db: Session, obj: T, obj_in: dict) -> T | None:
         for field, value in obj_in.items():
             setattr(obj, field, value)
-
-        db.commit()
+        db.flush()
         db.refresh(obj)
         return obj
         
     def delete(self, db: Session, id: int) -> T | None:
-        obj = self.get(id)
+        obj = self.get(db, id)
         if obj:
             db.delete(obj)
-            db.commit()
+            db.flush()
         return obj
+
+    def deactivate(self, db: Session, id: int) -> T | None:
+        obj = self.get(db, id)
+        if obj:
+            obj.ativo = False
+            db.flush()
+        return obj
+
+    def get_inactive(self, db: Session, id: int) -> T | None:
+        return db.query(self.model).filter(self.model.id == id).first()
+
+    def reativar(self, db: Session, id: int) -> T | None:
+        obj = self.get_inactive(db, id)
+        if obj:
+            obj.ativo = True
+            db.flush()
+        return obj
+

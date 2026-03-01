@@ -2,16 +2,21 @@ from pydantic import BaseModel, Field
 from pydantic import field_validator
 from datetime import datetime
 from typing import Optional, List
+from app.schemas.itemVenda import ItemVendaResponse
+
 
 class VendaBase(BaseModel):
     pass
     # usuario_id: int = Field(gt=0)
 
+
 class VendaCreate(VendaBase):
     pass
 
+
 class VendaUpdate(BaseModel):
     pass
+
 
 class VendaResponse(VendaBase):
     id: int
@@ -21,6 +26,6 @@ class VendaResponse(VendaBase):
     class ConfigDict:
         from_attributes = True
 
+
 class VendaDetalhada(VendaResponse):
-    itens: List = []
-    # formas_pagamento: List = []
+    itens: List[ItemVendaResponse] = []

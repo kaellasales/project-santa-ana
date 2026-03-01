@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String,  ForeignKey, Numeric, CheckConstraint
+from sqlalchemy import Column, Integer, String,  ForeignKey, Numeric, CheckConstraint, Boolean
 from app.core.database import Base
 from sqlalchemy.orm import relationship
 
@@ -16,10 +16,14 @@ class Produto(Base):
     
     categoria = relationship("Categoria", back_populates="produtos")
     itens_venda = relationship("ItemVenda", back_populates="produto")
-
+    ativo = Column(Boolean, default=True, nullable=False)
     __table_args__ = (
         CheckConstraint('estoque >= 0', name='check_estoque_non_negative'),
     )
 
     def __repr__(self):
         return f"<Produto(id={self.id}, nome={self.nome}, preco_venda={self.preco_venda}, estoque={self.estoque})>"
+
+    @property
+    def categoria_nome(self):
+        return self.categoria.nome if self.categoria else None

@@ -27,8 +27,7 @@ def obter_produto(produto_id: int,db: Session = Depends(get_db)):
 
 @router.patch("/{produto_id}", response_model=ProdutoResponse)
 def atualizar_produto(produto_id: int, update_produto:ProdutoUpdate, db: Session = Depends(get_db)):
-    update_data = update_produto.model_dump(exclude_unset=True)
-    return service.update(db, produto_id, update_data)
+    return service.update(db, produto_id, update_produto)
 
 @router.delete("/{produto_id}", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_produto(produto_id: int, db: Session = Depends(get_db)):

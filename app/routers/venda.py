@@ -12,7 +12,7 @@ repo_venda = VendaRepository()
 service = VendaService(repo_venda)
 
 # Criar nova venda
-@router.post("/", response_model=VendaResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=VendaDetalhada, status_code=status.HTTP_201_CREATED)
 def criar_venda(venda: VendaCreate, db: Session = Depends(get_db)):
     return service.create(db, venda)
 
@@ -74,8 +74,3 @@ def atualizar_venda(
 @router.put("/{venda_id}/recalcular-total", response_model=VendaResponse)
 def recalcular_total_venda(venda_id: int = Path(gt=0), db: Session = Depends(get_db)):
     return service.atualizar_total(db, venda_id)
-
-# Deletar venda
-@router.delete("/{venda_id}", status_code=status.HTTP_204_NO_CONTENT)
-def deletar_venda(venda_id: int = Path(gt=0), db: Session = Depends(get_db)):
-    service.delete(db, venda_id)

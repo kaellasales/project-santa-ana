@@ -8,8 +8,11 @@ class ProdutoService:
     def __init__(self, repository: ProdutoRepository):
         self.repository = repository
 
-    def create(self, db:Session, produto: ProdutoCreate):
-        return self.repository.create(db, produto.model_dump())
+    def create(self, db: Session, produto: ProdutoCreate):
+        obj = self.repository.create(db, produto.model_dump())
+        db.commit()
+        db.refresh(obj)
+        return obj
 
     def list(self, db:Session):
         return self.repository.list(db)
@@ -23,14 +26,17 @@ class ProdutoService:
     def get(self, db: Session, produto_id: int):
         return self._get_or_raise(db, produto_id)
     
-    def update(self, db:Session, produto_id: int, update_produto: ProdutoUpdate):
+    def update(self, db: Session, produto_id: int, update_produto: ProdutoUpdate):
         produto = self._get_or_raise(db, produto_id)
         update_data = update_produto.model_dump(exclude_unset=True)
-        return self.repository.update(db, produto, update_data)
+        obj = self.repository.update(db, produto, update_data)
+        db.commit()
+        return obj
 
-    def delete(self, db:Session, produto_id: int):
+    def delete(self, db: Session, produto_id: int):
         produto = self._get_or_raise(db, produto_id)
-        return self.repository.delete(db, produto_id)
+        self.repository.deactivate(db, produto_id)
+        db.commit()
     
     def buscar_por_nome(self, db:Session, nome: str):
         return self.repository.buscar_por_nome(db, nome)

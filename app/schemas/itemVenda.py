@@ -4,7 +4,6 @@ from typing import Optional
 
 class ItemVendaBase(BaseModel):
     quantidade: int = Field(gt=0)
-    preco_unitario: float = Field(gt=0)
 
 class ItemVendaCreate(ItemVendaBase):
     produto_id: int
@@ -27,6 +26,7 @@ class ItemVendaResponse(ItemVendaBase):
     id: int
     venda_id: int
     produto_id: int
+    preco_unitario: float
     subtotal: float
 
     class ConfigDict:
@@ -34,4 +34,3 @@ class ItemVendaResponse(ItemVendaBase):
 
 class ItemVendaUpdate(BaseModel):
     quantidade: Optional[int] = Field(None, gt=0)
-    # preco_unitario: Optional[float] = Field(None, gt=0)

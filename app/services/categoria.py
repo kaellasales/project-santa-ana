@@ -7,8 +7,11 @@ class CategoriaService:
     def __init__(self, repository: CategoriaRepository):
         self.repository = repository
 
-    def create(self, db:Session, categoria: CategoriaCreate):
-        return self.repository.create(db, categoria.model_dump())
+    def create(self, db: Session, categoria: CategoriaCreate):
+        obj = self.repository.create(db, categoria.model_dump())
+        db.commit()
+        db.refresh(obj)
+        return obj
 
     def list(self, db:Session):
         return self.repository.list(db)
@@ -24,3 +27,8 @@ class CategoriaService:
 
     def buscar_por_nome(self, db:Session, nome: str):
         return self.repository.buscar_por_nome(db, nome)
+
+    def delete(self, db: Session, categoria_id: int):
+        categoria = self._get_or_raise(db, categoria_id)
+        self.repository.deactivate(db, categoria_id)
+        db.commit()

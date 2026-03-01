@@ -17,12 +17,13 @@ class VendaService:
     #     return usuario
     
     def create(self, db: Session, venda: VendaCreate):
-        # self._validar_usuario_existe(db, venda.usuario_id)
-        
         dados = venda.model_dump()
-        dados["total"] = 0.0  # Será atualizado ao adicionar itens
+        dados["total"] = 0.0
         
-        return self.repository.create(db, dados)
+        obj = self.repository.create(db, dados)
+        db.commit()
+        db.refresh(obj)
+        return obj
     
     def list(self, db: Session):
         return self.repository.list(db)
@@ -51,15 +52,7 @@ class VendaService:
     #     self._validar_usuario_existe(db, usuario_id)
     #     return self.repository.total_vendas_usuario(db, usuario_id)
     
-    def update(self, db: Session, venda_id: int, venda_atualizada: VendaUpdate):
-        venda = self.get(db, venda_id)
-        
-        # if venda_atualizada.usuario_id is not None:
-        #     self._validar_usuario_existe(db, venda_atualizada.usuario_id)
-        #     venda.usuario_id = venda_atualizada.usuario_id
-        
-        return self.repository.update(db, venda_id, venda.__dict__)
-    
+
     def atualizar_total(self, db: Session, venda_id: int):
         """Recalcula o total da venda baseado nos itens"""
         venda = self.get(db, venda_id)
@@ -74,6 +67,9 @@ class VendaService:
     #     # Se você quiser implementar soft delete, adicione um campo 'ativo' no modelo
     #     return self.repository.delete(db, venda_id)
     
-    def delete(self, db: Session, venda_id: int):
+    def update(self, db: Session, venda_id: int, venda_atualizada: VendaUpdate):
         venda = self.get(db, venda_id)
-        return self.repository.delete(db, venda_id)
+        obj = self.repository.update(db, venda, venda.__dict__)
+        db.commit()
+        return obj
+

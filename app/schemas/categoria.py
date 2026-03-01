@@ -16,6 +16,7 @@ class CategoriaCreate(CategoriaBase):
 
 class CategoriaResponse(CategoriaBase):
     id: int
+    ativo: bool = True
 
     class ConfigDict:
         from_attributes = True

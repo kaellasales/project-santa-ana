@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import categoria, produto, venda, itemVenda
+from app.routers import categoria, produto, venda, itemVenda, pagamento
 from app.core.handlers import setup_exception_handlers
 
 app = FastAPI(
@@ -17,6 +17,7 @@ app.include_router(categoria.router, prefix="/categorias", tags=["Categorias"])
 app.include_router(produto.router, prefix="/produtos", tags=["Produtos"])
 app.include_router(venda.router, prefix="/vendas", tags=["vendas"])
 app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"])
+app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"])
 
 @app.get("/")
 def root():

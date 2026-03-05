@@ -17,7 +17,7 @@ class Venda(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     # usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
-    data_venda = Column(DateTime, default=datetime.utcnow, nullable=False)
+    data_venda = Column(DateTime, nullable=True) 
     total = Column(Float, default=0.0, nullable=False)
     status = Column(SAEnum(VendaStatus), default=VendaStatus.ABERTA, nullable=False)
 

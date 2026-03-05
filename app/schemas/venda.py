@@ -22,7 +22,8 @@ class VendaResponse(VendaBase):
     id: int
     data_venda: datetime
     total: float
-
+    status: str
+    
     class ConfigDict:
         from_attributes = True
 

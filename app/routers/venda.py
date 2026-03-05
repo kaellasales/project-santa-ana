@@ -4,12 +4,14 @@ from datetime import datetime
 from app.core.database import get_db
 from app.schemas.venda import VendaCreate, VendaResponse, VendaUpdate, VendaDetalhada
 from app.repositories.venda import VendaRepository
+from app.repositories.produto import ProdutoRepository
 from app.services.venda import VendaService
 
 router = APIRouter()
 repo_venda = VendaRepository()
+repo_produto = ProdutoRepository()
+service = VendaService(repo_venda, repo_produto)
 
-service = VendaService(repo_venda)
 
 # Criar nova venda
 @router.post("/", response_model=VendaDetalhada, status_code=status.HTTP_201_CREATED)
@@ -74,3 +76,11 @@ def atualizar_venda(
 @router.put("/{venda_id}/recalcular-total", response_model=VendaResponse)
 def recalcular_total_venda(venda_id: int = Path(gt=0), db: Session = Depends(get_db)):
     return service.atualizar_total(db, venda_id)
+
+@router.patch("/{venda_id}/finalizar", response_model=VendaResponse)
+def finalizar_venda(venda_id: int = Path(gt=0), db: Session = Depends(get_db)):
+    return service.finalizar(db, venda_id)
+
+@router.patch("/{venda_id}/cancelar", response_model=VendaResponse)
+def cancelar_venda(venda_id: int = Path(gt=0), db: Session = Depends(get_db)):
+    return service.cancelar(db, venda_id)

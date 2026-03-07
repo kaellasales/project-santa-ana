@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 from pydantic import field_validator
-from typing import Optional
 
 class ItemVendaBase(BaseModel):
     quantidade: int = Field(gt=0)
@@ -32,5 +31,6 @@ class ItemVendaResponse(ItemVendaBase):
     class ConfigDict:
         from_attributes = True
 
+
 class ItemVendaUpdate(BaseModel):
-    quantidade: Optional[int] = Field(None, gt=0)
+    quantidade: int | None = Field(None, gt=0)

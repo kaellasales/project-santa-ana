@@ -16,11 +16,11 @@ class ProdutoCreate(ProdutoBase):
     pass 
 
 class ProdutoUpdate(BaseModel):
-    nome: Optional[str] = Field(None, min_length=1, max_length=100)
-    preco_venda: Optional[Decimal] = Field(None, gt=0, max_digits=10, decimal_places=2)
-    preco_compra: Optional[Decimal] = Field(None, gt=0, max_digits=10, decimal_places=2)
-    categoria_id: Optional[int] = Field(None, gt=0)
-    codigo_barra: Optional[str] = Field(None, max_length=50)
+    nome: str | None = Field(None, min_length=1, max_length=100)
+    preco_venda: Decimal | None = Field(None, gt=0, max_digits=10, decimal_places=2)
+    preco_compra: Decimal | None = Field(None, gt=0, max_digits=10, decimal_places=2)
+    categoria_id: int | None = Field(None, gt=0)
+    codigo_barra: str | None = Field(None, max_length=50)
     ativo: bool = True
 
 class ProdutoResponse(ProdutoBase):

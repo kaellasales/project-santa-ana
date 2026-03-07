@@ -20,6 +20,14 @@ def registrar_pagamento(
     db: Session = Depends(get_db)
 ):
     return service.create(db, venda_id, forma)
+    
+@router.put("/{venda_id}/pagamento", response_model=FormaPagamentoResponse)
+def atualizar_pagamento(
+    venda_id: int = Path(gt=0),
+    forma: FormaPagamentoCreate = None,
+    db: Session = Depends(get_db)
+):
+    return service.update(db, venda_id, forma)
 
 @router.get("/{venda_id}/pagamento", response_model=FormaPagamentoResponse)
 def obter_pagamento(

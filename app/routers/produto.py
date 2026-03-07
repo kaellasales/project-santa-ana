@@ -12,10 +12,13 @@ repo = ProdutoRepository()
 service = ProdutoService(repo)
 
 @router.get("/", response_model=list[ProdutoResponse])
-def listar_produtos(nome: str | None = None, db: Session = Depends(get_db)):
+def listar_produtos(nome: str | None = None, codigo_barra: str | None = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     if nome:
         return service.buscar_por_nome(db, nome)
-    return service.list(db)
+    if codigo_barra:
+        produto = service.buscar_por_codigo_barra(db, codigo_barra)
+        return [produto] if produto else []
+    return service.list(db, skip=skip, limit=limit)
 
 @router.post("/", response_model=ProdutoResponse)
 def criar_produto(produto: ProdutoCreate, db: Session = Depends(get_db)):
@@ -25,6 +28,10 @@ def criar_produto(produto: ProdutoCreate, db: Session = Depends(get_db)):
 def obter_produto(produto_id: int,db: Session = Depends(get_db)):
     return service.get(db, produto_id)
 
+@router.get("/codigo_barra/{codigo_barra}", response_model=ProdutoResponse)
+def obter_produto_por_codigo_barra(codigo_barra: str, db: Session = Depends(get_db)):
+    return service.buscar_por_codigo_barra(db, codigo_barra)
+
 @router.patch("/{produto_id}", response_model=ProdutoResponse)
 def atualizar_produto(produto_id: int, update_produto:ProdutoUpdate, db: Session = Depends(get_db)):
     return service.update(db, produto_id, update_produto)
@@ -33,4 +40,5 @@ def atualizar_produto(produto_id: int, update_produto:ProdutoUpdate, db: Session
 def deletar_produto(produto_id: int, db: Session = Depends(get_db)):
     service.delete(db, produto_id)
     return None 
+
 

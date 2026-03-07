@@ -10,6 +10,9 @@ class ProdutoRepository(BaseRepository[produtoModel]):
     def buscar_por_nome(self, db:Session, nome: str):
         return db.query(produtoModel).filter(produtoModel.nome.ilike(f"%{nome}%")).all()
 
+    def buscar_por_codigo_barra(self, db:Session, codigo_barra: str):
+        return db.query(produtoModel).filter(produtoModel.codigo_barra == codigo_barra).first()
+
     def alterar_estoque(self, db: Session, produto_id: int, delta: int):
         """
         Muda o estoque de forma atômica.

@@ -14,8 +14,8 @@ class ProdutoService:
         db.refresh(obj)
         return obj
 
-    def list(self, db:Session):
-        return self.repository.list(db)
+    def list(self, db: Session, skip: int = 0, limit: int = 100):
+        return self.repository.list(db, skip=skip, limit=limit)
 
     def _get_or_raise(self, db:Session, produto_id: int):
         produto = self.repository.get(db, produto_id)
@@ -40,6 +40,9 @@ class ProdutoService:
     
     def buscar_por_nome(self, db:Session, nome: str):
         return self.repository.buscar_por_nome(db, nome)
+
+    def buscar_por_codigo_barra(self, db:Session, codigo_barra: str):
+        return self.repository.buscar_por_codigo_barra(db, codigo_barra)    
 
     def dar_baixa_estoque(self, db: Session, produto_id: int, quantidade: int):
         if quantidade <= 0:

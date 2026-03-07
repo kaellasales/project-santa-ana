@@ -20,7 +20,9 @@ class Venda(Base):
     data_venda = Column(DateTime, nullable=True) 
     total = Column(Float, default=0.0, nullable=False)
     status = Column(SAEnum(VendaStatus), default=VendaStatus.ABERTA, nullable=False)
-
+    desconto = Column(Float, default=0.0, nullable=False)
+    acrescimo = Column(Float, default=0.0, nullable=False)
+    
     # Relacionamentos
     # usuario = relationship("Usuario", back_populates="vendas")
     itens = relationship("ItemVenda", back_populates="venda", cascade="all, delete-orphan")

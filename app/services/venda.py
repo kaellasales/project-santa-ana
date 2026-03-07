@@ -20,8 +20,8 @@ class VendaService:
         db.refresh(obj)
         return obj
 
-    def list(self, db: Session):
-        return self.repository.list(db)
+    def list(self, db: Session, skip: int = 0, limit: int = 100):
+        return self.repository.list(db, skip=skip, limit=limit)
 
     def get(self, db: Session, venda_id: int):
         venda = self.repository.get(db, venda_id)
@@ -37,16 +37,24 @@ class VendaService:
 
     def atualizar_total(self, db: Session, venda_id: int):
         venda = self.get(db, venda_id)
-        venda.total = sum(item.subtotal for item in venda.itens)
+        subtotal = sum(item.subtotal for item in venda.itens)
+        subtotal += venda.acrescimo or 0
+        subtotal -= venda.desconto or 0
+        venda.total = subtotal
         db.commit()
         db.refresh(venda)
         return venda
 
     def update(self, db: Session, venda_id: int, venda_atualizada: VendaUpdate):
         venda = self.get(db, venda_id)
-        obj = self.repository.update(db, venda, venda.__dict__)
+        dados = venda_atualizada.model_dump(exclude_unset=True)
+        
+        if venda.forma_pagamento and ('acrescimo' in dados or 'desconto' in dados):
+            raise ValueError("Não é possível alterar acréscimo/desconto após forma de pagamento ser criada")
+        
+        self.repository.update(db, venda, dados)
         db.commit()
-        return obj
+        return self.atualizar_total(db, venda_id)
 
     def finalizar(self, db: Session, venda_id: int):
         venda = self.get(db, venda_id)
@@ -60,9 +68,9 @@ class VendaService:
         if not venda.forma_pagamento:
             raise ValueError("Venda não pode ser finalizada sem forma de pagamento")
 
+        venda = self.atualizar_total(db, venda_id)
         venda.status = VendaStatus.CONCLUIDA
         venda.data_venda = datetime.now(timezone.utc)
-        db.add(venda)
         db.commit()
         db.refresh(venda)
         return venda

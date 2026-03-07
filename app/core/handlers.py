@@ -14,8 +14,11 @@ async def estoque_insuficiente_handler(request: Request, exc: EstoqueInsuficient
         status_code=409, 
         content={"message": exc.message, "tipo_erro": "estoque_insuficiente"},
     )
+async def value_error_handler(request, exc: ValueError):
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 def setup_exception_handlers(app: FastAPI):
     """Registra todos os handlers na aplicação FastAPI"""
     app.add_exception_handler(NotFoundError, handler_geral_404)
     app.add_exception_handler(EstoqueInsuficienteError, estoque_insuficiente_handler)
+    app.add_exception_handler(ValueError, value_error_handler)

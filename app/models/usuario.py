@@ -16,8 +16,8 @@ class Usuario(Base):
     username = Column(String(50), unique=True, nullable=False)
     senha = Column(String(255), nullable=False)
     role = Column(SAEnum(RoleUsuario), default=RoleUsuario.VENDEDOR, nullable=False)
+    email = Column(String(100), unique=True, nullable=True)
     ativo = Column(Boolean, default=True, nullable=False)
 
     def __repr__(self):
         return f"<Usuario(id={self.id}, username={self.username}, role={self.role})>"
-        

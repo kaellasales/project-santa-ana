@@ -5,6 +5,7 @@ from app.models.usuario import RoleUsuario
 class UsuarioBase(BaseModel):
     nome: str = Field(min_length=1, max_length=100)
     username: str = Field(min_length=3, max_length=50)
+    email: str | None = None
 
 
 class UsuarioCreate(UsuarioBase):
@@ -16,6 +17,7 @@ class UsuarioUpdate(BaseModel):
     nome: str | None = Field(None, min_length=1, max_length=100)
     username: str | None = Field(None, min_length=3, max_length=50)
     senha: str | None = Field(None, min_length=6, max_length=72)
+    email: str | None = None
     ativo: bool | None = None
 
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.routers import categoria, produto, venda, itemVenda, pagamento, usuario
 from app.core.handlers import setup_exception_handlers
-from app.core.seed import seed_categorias
+from app.core.seed import seed_categorias, seed_usuario_admin
 from app.core.database import SessionLocal
 from app.routers import auth
 
@@ -23,11 +23,13 @@ app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"]
 app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"])
 app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+
 @app.on_event("startup")
 def startup():
     db = SessionLocal()
     try:
         seed_categorias(db)
+        seed_usuario_admin(db)
     finally:
         db.close()
 

@@ -14,6 +14,7 @@ async def estoque_insuficiente_handler(request: Request, exc: EstoqueInsuficient
         status_code=409, 
         content={"message": exc.message, "tipo_erro": "estoque_insuficiente"},
     )
+    
 async def value_error_handler(request, exc: ValueError):
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 

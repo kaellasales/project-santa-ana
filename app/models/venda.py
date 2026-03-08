@@ -26,7 +26,8 @@ class Venda(Base):
     # usuario = relationship("Usuario", back_populates="vendas")
     itens = relationship("ItemVenda", back_populates="venda", cascade="all, delete-orphan")
     forma_pagamento = relationship("FormaPagamento", back_populates="venda", uselist=False)
-
+    movimentacoes = relationship("MovimentacaoEstoque", back_populates="venda")
+    
     def __repr__(self):
         # return f"<Venda(id={self.id}, usuario_id={self.usuario_id}, total={self.total})>"
         return f"<Venda(id={self.id}, total={self.total})>"

@@ -1,16 +1,19 @@
 from sqlalchemy.orm import Session
 from app.repositories.venda import VendaRepository
 from app.repositories.produto import ProdutoRepository
+from app.repositories.movimentacao import MovimentacaoEstoqueRepository
 from app.schemas.venda import VendaCreate, VendaUpdate
 from app.core.exceptions import VendaNotFoundError
 from app.models.venda import VendaStatus
+from app.models.movimentacao import TipoMovimentacao, MotivoMovimentacao, MovimentacaoEstoque
 from datetime import datetime, timezone, timedelta
 
 
 class VendaService:
-    def __init__(self, repository_venda: VendaRepository, repository_produto: ProdutoRepository):
+    def __init__(self, repository_venda: VendaRepository, repository_produto: ProdutoRepository, repository_movimentacao: MovimentacaoEstoqueRepository):
         self.repository = repository_venda
         self.produto_repository = repository_produto
+        self.movimentacao_repository = repository_movimentacao
 
     def create(self, db: Session, venda: VendaCreate):
         dados = venda.model_dump()
@@ -68,6 +71,15 @@ class VendaService:
         if not venda.forma_pagamento:
             raise ValueError("Venda não pode ser finalizada sem forma de pagamento")
 
+        for item in venda.itens:
+            self.movimentacao_repository.create(db, {
+                "produto_id": item.produto_id,
+                "venda_id": venda_id,
+                "tipo": TipoMovimentacao.SAIDA,
+                "motivo": MotivoMovimentacao.VENDA,
+                "quantidade": item.quantidade
+            })
+
         venda = self.atualizar_total(db, venda_id)
         venda.status = VendaStatus.CONCLUIDA
         venda.data_venda = datetime.now(timezone.utc)
@@ -92,6 +104,13 @@ class VendaService:
             if produto:
                 produto.estoque += item.quantidade
                 db.add(produto)
+            self.movimentacao_repository.create(db, {
+                "produto_id": item.produto_id,
+                "venda_id": venda_id,
+                "tipo": TipoMovimentacao.ENTRADA,
+                "motivo": MotivoMovimentacao.DEVOLUCAO,
+                "quantidade": item.quantidade
+            })
 
         venda.status = VendaStatus.CANCELADA
         db.add(venda)

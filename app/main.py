@@ -4,6 +4,7 @@ from app.core.handlers import setup_exception_handlers
 from app.core.seed import seed_categorias, seed_usuario_admin
 from app.core.database import SessionLocal
 from app.routers import auth
+from app.routers import movimentacao
 
 app = FastAPI(
     title="API Farmácia Santa Ana",
@@ -23,6 +24,7 @@ app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"]
 app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"])
 app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+app.include_router(movimentacao.router, prefix="/movimentacoes", tags=["Movimentacoes"])
 
 @app.on_event("startup")
 def startup():

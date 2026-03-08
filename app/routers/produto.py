@@ -4,12 +4,15 @@ from app.core.database import get_db
 from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from app.repositories.produto import ProdutoRepository
 from app.services.produto import ProdutoService
+from app.repositories.movimentacao import MovimentacaoEstoqueRepository
 from app.models.produto import Produto
 from app.core.exceptions import ProdutoNotFoundError
 
+
 router = APIRouter()
 repo = ProdutoRepository()
-service = ProdutoService(repo)
+repo_movimentacao = MovimentacaoEstoqueRepository()
+service = ProdutoService(repo, repo_movimentacao)
 
 @router.get("/", response_model=list[ProdutoResponse])
 def listar_produtos(nome: str | None = None, codigo_barra: str | None = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):

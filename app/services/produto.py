@@ -3,13 +3,27 @@ from sqlalchemy.exc import IntegrityError
 from app.repositories.produto import ProdutoRepository
 from app.schemas.produto import ProdutoCreate, ProdutoUpdate
 from app.core.exceptions import ProdutoNotFoundError, EstoqueInsuficienteError
+from app.repositories.movimentacao import MovimentacaoEstoqueRepository
+from app.models.movimentacao import TipoMovimentacao, MotivoMovimentacao
+
 
 class ProdutoService:
-    def __init__(self, repository: ProdutoRepository):
+    def __init__(self, repository: ProdutoRepository, movimentacao_repository: MovimentacaoEstoqueRepository):
         self.repository = repository
+        self.movimentacao_repository = movimentacao_repository
 
     def create(self, db: Session, produto: ProdutoCreate):
         obj = self.repository.create(db, produto.model_dump())
+        
+        if obj.estoque > 0:
+            self.movimentacao_repository.create(db, {
+                "produto_id": obj.id,
+                "venda_id": None,
+                "tipo": TipoMovimentacao.ENTRADA,
+                "motivo": MotivoMovimentacao.CADASTRO_INICIAL,
+                "quantidade": obj.estoque
+            })
+
         db.commit()
         db.refresh(obj)
         return obj

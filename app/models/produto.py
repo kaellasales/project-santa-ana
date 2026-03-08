@@ -16,6 +16,7 @@ class Produto(Base):
     
     categoria = relationship("Categoria", back_populates="produtos")
     itens_venda = relationship("ItemVenda", back_populates="produto")
+    movimentacoes = relationship("MovimentacaoEstoque", back_populates="produto")
     ativo = Column(Boolean, default=True, nullable=False)
     __table_args__ = (
         CheckConstraint('estoque >= 0', name='check_estoque_non_negative'),

@@ -5,12 +5,14 @@ from app.core.database import get_db
 from app.schemas.venda import VendaCreate, VendaResponse, VendaUpdate, VendaDetalhada
 from app.repositories.venda import VendaRepository
 from app.repositories.produto import ProdutoRepository
+from app.repositories.movimentacao import MovimentacaoEstoqueRepository
 from app.services.venda import VendaService
 
 router = APIRouter()
 repo_venda = VendaRepository()
 repo_produto = ProdutoRepository()
-service = VendaService(repo_venda, repo_produto)
+repo_movimentacao = MovimentacaoEstoqueRepository()
+service = VendaService(repo_venda, repo_produto, repo_movimentacao)
 
 
 # Criar nova venda

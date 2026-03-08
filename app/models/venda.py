@@ -1,5 +1,3 @@
-
-
 from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, Boolean, Enum as SAEnum
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -12,17 +10,18 @@ class VendaStatus(PyEnum):
     CONCLUIDA = "CONCLUIDA"
     CANCELADA = "CANCELADA"
 
+
 class Venda(Base):
     __tablename__ = "vendas"
     
     id = Column(Integer, primary_key=True, index=True)
     # usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
-    data_venda = Column(DateTime, nullable=True) 
+    data_venda = Column(DateTime(timezone=True), nullable=True) 
     total = Column(Float, default=0.0, nullable=False)
     status = Column(SAEnum(VendaStatus), default=VendaStatus.ABERTA, nullable=False)
     desconto = Column(Float, default=0.0, nullable=False)
     acrescimo = Column(Float, default=0.0, nullable=False)
-    
+
     # Relacionamentos
     # usuario = relationship("Usuario", back_populates="vendas")
     itens = relationship("ItemVenda", back_populates="venda", cascade="all, delete-orphan")

@@ -11,7 +11,7 @@ repository = UsuarioRepository()
 
 
 def get_usuario_logado(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    payload = verificar_token(token)
+    payload = verificar_token(token, "access")
     if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido ou expirado")
     

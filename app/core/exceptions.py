@@ -18,12 +18,12 @@ class EstoqueInsuficienteError(Exception):
         self.message = message
         super().__init__(self.message)
 
-class VendaNotFoundError(Exception):
+class UsuarioNotFoundError(NotFoundError):
     pass
 
-class UsuarioNotFoundError(Exception):
+class ItemVendaNotFoundError(NotFoundError):
     pass
 
-class ItemVendaNotFoundError(Exception):
+class VendaNotFoundError(NotFoundError):
     pass
 

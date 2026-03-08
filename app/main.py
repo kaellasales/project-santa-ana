@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import categoria, produto, venda, itemVenda, pagamento
+from app.routers import categoria, produto, venda, itemVenda, pagamento, usuario
 from app.core.handlers import setup_exception_handlers
 from app.core.seed import seed_categorias
 from app.core.database import SessionLocal
@@ -20,6 +20,7 @@ app.include_router(produto.router, prefix="/produtos", tags=["Produtos"])
 app.include_router(venda.router, prefix="/vendas", tags=["vendas"])
 app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"])
 app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"])
+app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
 
 @app.on_event("startup")
 def startup():

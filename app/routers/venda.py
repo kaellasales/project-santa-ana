@@ -20,7 +20,7 @@ def criar_venda(venda: VendaCreate, db: Session = Depends(get_db)):
 
 # Listar todas as vendas
 @router.get("/", response_model=list[VendaResponse])
-def listar_vendas(skip: int = 0, limit: int = 100,db: Session = Depends(get_db)):
+def listar_vendas(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return service.list(db, skip=skip, limit=limit)
 
 # Listar últimas vendas (com limite)

@@ -40,3 +40,6 @@ makemigrations *args:
 
 migrate:
     just exec fast-api poetry run alembic upgrade head
+
+db-reset:
+    docker compose -p {{PROJECT_NAME}} -f {{COMPOSE_FILES}} exec db psql -U postgres -d santa_ana_db -c "TRUNCATE TABLE formas_pagamento, itens_venda, vendas, produtos, categorias RESTART IDENTITY CASCADE;"

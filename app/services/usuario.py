@@ -58,3 +58,11 @@ class UsuarioService:
             raise UsuarioNotFoundError()
         db.commit()
         return obj
+
+    def autenticar(self, db: Session, username: str, senha: str):
+        usuario = self.repository.get_by_username(db, username)
+        if not usuario:
+            return None
+        if not self._verificar_senha(senha, usuario.senha):
+            return None
+        return usuario

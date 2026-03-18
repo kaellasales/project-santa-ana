@@ -27,3 +27,5 @@ class ItemVendaNotFoundError(NotFoundError):
 class VendaNotFoundError(NotFoundError):
     pass
 
+class TurnoNotFoundError(NotFoundError):
+    pass

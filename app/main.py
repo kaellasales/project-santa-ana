@@ -1,11 +1,10 @@
 from fastapi import FastAPI, Depends
-from app.routers import categoria, produto, venda, itemVenda, pagamento, usuario
+from app.routers import categoria, produto, venda, itemVenda, pagamento, usuario, auth, movimentacao, turno
 from app.core.handlers import setup_exception_handlers
 from app.core.seed import seed_categorias, seed_usuario_admin
 from app.core.database import SessionLocal
-from app.routers import auth
-from app.routers import movimentacao
 from app.core.dependencies import get_usuario_logado
+
 
 app = FastAPI(
     title="API Farmácia Santa Ana",
@@ -28,7 +27,7 @@ app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"], **pr
 app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])  
 app.include_router(auth.router, prefix="/auth", tags=["Auth"]) 
 app.include_router(movimentacao.router, prefix="/movimentacoes", tags=["Movimentacoes"], **protected)
-
+app.include_router(turno.router, prefix="/turnos", tags=["Turnos"], **protected)
 @app.on_event("startup")
 def startup():
     db = SessionLocal()

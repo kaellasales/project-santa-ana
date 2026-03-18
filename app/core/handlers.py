@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from app.core.exceptions import NotFoundError, EstoqueInsuficienteError
+from app.core.exceptions import NotFoundError, EstoqueInsuficienteError, TurnoNotFoundError
 from fastapi import Request
 
 async def handler_geral_404(request, exc: NotFoundError):
@@ -18,8 +18,12 @@ async def estoque_insuficiente_handler(request: Request, exc: EstoqueInsuficient
 async def value_error_handler(request, exc: ValueError):
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
+async def turno_not_found_handler(request, exc):
+    return JSONResponse(status_code=404, content={"detail": "Nenhum turno aberto encontrado"})
+
 def setup_exception_handlers(app: FastAPI):
     """Registra todos os handlers na aplicação FastAPI"""
     app.add_exception_handler(NotFoundError, handler_geral_404)
     app.add_exception_handler(EstoqueInsuficienteError, estoque_insuficiente_handler)
     app.add_exception_handler(ValueError, value_error_handler)
+    app.add_exception_handler(TurnoNotFoundError, turno_not_found_handler)

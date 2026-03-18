@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from datetime import datetime, timezone, timedelta
 from app.repositories.venda import VendaRepository
 from app.repositories.produto import ProdutoRepository
 from app.repositories.movimentacao import MovimentacaoEstoqueRepository
@@ -6,19 +7,29 @@ from app.schemas.venda import VendaCreate, VendaUpdate
 from app.core.exceptions import VendaNotFoundError
 from app.models.venda import VendaStatus
 from app.models.movimentacao import TipoMovimentacao, MotivoMovimentacao, MovimentacaoEstoque
-from datetime import datetime, timezone, timedelta
-
+from app.repositories.turno import TurnoRepository
+from app.core.exceptions import TurnoNotFoundError
+from app.services.turno import TurnoService
 
 class VendaService:
-    def __init__(self, repository_venda: VendaRepository, repository_produto: ProdutoRepository, repository_movimentacao: MovimentacaoEstoqueRepository):
+    def __init__(self, repository_venda: VendaRepository, repository_produto: ProdutoRepository, 
+    repository_movimentacao: MovimentacaoEstoqueRepository, repository_turno: TurnoRepository
+    ):
         self.repository = repository_venda
         self.produto_repository = repository_produto
         self.movimentacao_repository = repository_movimentacao
+        self.turno_repository = repository_turno
+        self.turno_service = TurnoService(repository_turno, repository_venda)
 
     def create(self, db: Session, venda: VendaCreate, usuario_id: int):
+        turno = self.turno_repository.get_turno_ativo(db, usuario_id)
+        if not turno:
+            raise TurnoNotFoundError()
+
         dados = venda.model_dump()
         dados["total"] = 0.0
-        dados["usuario_id"] = usuario_id 
+        dados["usuario_id"] = usuario_id
+        dados["turno_id"] = turno.id
         obj = self.repository.create(db, dados)
         db.commit()
         db.refresh(obj)
@@ -39,16 +50,21 @@ class VendaService:
     def list_ultimas_vendas(self, db: Session, limite: int = 10):
         return self.repository.buscar_ultimas_vendas(db, limite)
 
-    def atualizar_total(self, db: Session, venda_id: int):
+    def _recalcular_total(self, db: Session, venda_id: int):
         venda = self.get(db, venda_id)
         subtotal = sum(item.subtotal for item in venda.itens)
         subtotal += venda.acrescimo or 0
         subtotal -= venda.desconto or 0
         venda.total = subtotal
-        db.commit()
+        db.flush()
         db.refresh(venda)
         return venda
 
+    def atualizar_total(self, db: Session, venda_id: int):
+        resultado = self._recalcular_total(db, venda_id)
+        db.commit()
+        return resultado
+        
     def update(self, db: Session, venda_id: int, venda_atualizada: VendaUpdate):
         venda = self.get(db, venda_id)
         dados = venda_atualizada.model_dump(exclude_unset=True)
@@ -57,8 +73,9 @@ class VendaService:
             raise ValueError("Não é possível alterar acréscimo/desconto após forma de pagamento ser criada")
         
         self.repository.update(db, venda, dados)
+        resultado = self._recalcular_total(db, venda_id)
         db.commit()
-        return self.atualizar_total(db, venda_id)
+        return resultado
 
     def finalizar(self, db: Session, venda_id: int):
         venda = self.get(db, venda_id)
@@ -81,9 +98,10 @@ class VendaService:
                 "quantidade": item.quantidade
             })
 
-        venda = self.atualizar_total(db, venda_id)
+        venda = self._recalcular_total(db, venda_id)
         venda.status = VendaStatus.CONCLUIDA
         venda.data_venda = datetime.now(timezone.utc)
+        self.turno_service.atualizar_totais(db, venda.turno_id)
         db.commit()
         db.refresh(venda)
         return venda
@@ -115,6 +133,7 @@ class VendaService:
 
         venda.status = VendaStatus.CANCELADA
         db.add(venda)
+        self.turno_service.atualizar_totais(db, venda.turno_id)
         db.commit()
         db.refresh(venda)
         return venda

@@ -20,6 +20,7 @@ class VendaUpdate(BaseModel):
 
 class VendaResponse(VendaBase):
     id: int
+    turno_id: int
     usuario_id: int
     data_venda: datetime | None = None
     total: float

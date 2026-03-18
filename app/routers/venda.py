@@ -5,16 +5,17 @@ from app.core.database import get_db
 from app.core.dependencies import get_usuario_logado
 from app.schemas.venda import VendaCreate, VendaResponse, VendaUpdate, VendaDetalhada
 from app.repositories.venda import VendaRepository
+from app.repositories.turno import TurnoRepository
 from app.repositories.produto import ProdutoRepository
 from app.repositories.movimentacao import MovimentacaoEstoqueRepository
 from app.services.venda import VendaService
-
 
 router = APIRouter()
 repo_venda = VendaRepository()
 repo_produto = ProdutoRepository()
 repo_movimentacao = MovimentacaoEstoqueRepository()
-service = VendaService(repo_venda, repo_produto, repo_movimentacao)
+repo_turno = TurnoRepository()
+service = VendaService(repo_venda, repo_produto, repo_movimentacao, repo_turno)
 
 
 @router.post("/", response_model=VendaDetalhada, status_code=status.HTTP_201_CREATED)

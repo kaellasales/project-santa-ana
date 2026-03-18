@@ -22,5 +22,6 @@ class Usuario(Base):
 
     # Relacionamentos
     vendas = relationship("Venda", back_populates="usuario")
+    turnos = relationship("Turno", back_populates="usuario")
     def __repr__(self):
         return f"<Usuario(id={self.id}, username={self.username}, role={self.role})>"

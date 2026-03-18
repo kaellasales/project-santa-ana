@@ -15,9 +15,10 @@ class VendaService:
         self.produto_repository = repository_produto
         self.movimentacao_repository = repository_movimentacao
 
-    def create(self, db: Session, venda: VendaCreate):
+    def create(self, db: Session, venda: VendaCreate, usuario_id: int):
         dados = venda.model_dump()
         dados["total"] = 0.0
+        dados["usuario_id"] = usuario_id 
         obj = self.repository.create(db, dados)
         db.commit()
         db.refresh(obj)

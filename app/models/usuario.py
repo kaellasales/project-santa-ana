@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Enum as SAEnum
+from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 from app.core.database import Base
 
@@ -19,5 +20,7 @@ class Usuario(Base):
     email = Column(String(100), unique=True, nullable=True)
     ativo = Column(Boolean, default=True, nullable=False)
 
+    # Relacionamentos
+    vendas = relationship("Venda", back_populates="usuario")
     def __repr__(self):
         return f"<Usuario(id={self.id}, username={self.username}, role={self.role})>"

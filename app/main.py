@@ -1,10 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from app.routers import categoria, produto, venda, itemVenda, pagamento, usuario
 from app.core.handlers import setup_exception_handlers
 from app.core.seed import seed_categorias, seed_usuario_admin
 from app.core.database import SessionLocal
 from app.routers import auth
 from app.routers import movimentacao
+from app.core.dependencies import get_usuario_logado
 
 app = FastAPI(
     title="API Farmácia Santa Ana",
@@ -17,14 +18,16 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-app.include_router(categoria.router, prefix="/categorias", tags=["Categorias"])
-app.include_router(produto.router, prefix="/produtos", tags=["Produtos"])
-app.include_router(venda.router, prefix="/vendas", tags=["vendas"])
-app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"])
-app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"])
-app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
-app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(movimentacao.router, prefix="/movimentacoes", tags=["Movimentacoes"])
+protected = {"dependencies": [Depends(get_usuario_logado)]}
+
+app.include_router(categoria.router, prefix="/categorias", tags=["Categorias"], **protected)
+app.include_router(produto.router, prefix="/produtos", tags=["Produtos"], **protected)
+app.include_router(venda.router, prefix="/vendas", tags=["vendas"], **protected)
+app.include_router(itemVenda.router, prefix="/itens-venda", tags=["itens-venda"], **protected)
+app.include_router(pagamento.router, prefix="/vendas", tags=["Pagamentos"], **protected)
+app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])  
+app.include_router(auth.router, prefix="/auth", tags=["Auth"]) 
+app.include_router(movimentacao.router, prefix="/movimentacoes", tags=["Movimentacoes"], **protected)
 
 @app.on_event("startup")
 def startup():

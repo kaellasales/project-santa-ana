@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, Type
+from typing import TypeVar, Generic, Type, List
 from sqlalchemy.orm import Session, DeclarativeBase
 
 class Base(DeclarativeBase):
@@ -16,7 +16,7 @@ class BaseRepository(Generic[T]):
             query = query.filter(self.model.ativo)
         return query.first()
 
-    def list(self, db: Session, skip: int = 0, limit: int = 100) -> list[T]:
+    def list(self, db: Session, skip: int = 0, limit: int = 100) -> List[T]:
         query = db.query(self.model)
         if hasattr(self.model, 'ativo'):
             query = query.filter(self.model.ativo)
@@ -60,3 +60,8 @@ class BaseRepository(Generic[T]):
             db.flush()
         return obj
 
+    def list_inactive(self, db: Session, skip: int = 0, limit: int = 100) -> List[T]:
+        query = db.query(self.model)
+        if hasattr(self.model, 'ativo'):
+            query = query.filter(self.model.ativo.is_(False))
+        return query.offset(skip).limit(limit).all()

@@ -31,6 +31,9 @@ class ProdutoService:
     def list(self, db: Session, skip: int = 0, limit: int = 100):
         return self.repository.list(db, skip=skip, limit=limit)
 
+    def list_inactive(self, db: Session, skip: int = 0, limit: int = 100):
+        return self.repository.list_inactive(db, skip=skip, limit=limit)
+
     def _get_or_raise(self, db:Session, produto_id: int):
         produto = self.repository.get(db, produto_id)
         if not produto:

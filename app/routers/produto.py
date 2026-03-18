@@ -27,13 +27,17 @@ def listar_produtos(nome: str | None = None, codigo_barra: str | None = None, sk
 def criar_produto(produto: ProdutoCreate, db: Session = Depends(get_db)):
     return service.create(db, produto)
 
-@router.get("/{produto_id}", response_model=ProdutoResponse)
-def obter_produto(produto_id: int,db: Session = Depends(get_db)):
-    return service.get(db, produto_id)
+@router.get("/inativos/", response_model=list[ProdutoResponse])
+def listar_produtos_inativos(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return service.list_inactive(db, skip=skip, limit=limit)
 
 @router.get("/codigo_barra/{codigo_barra}", response_model=ProdutoResponse)
 def obter_produto_por_codigo_barra(codigo_barra: str, db: Session = Depends(get_db)):
     return service.buscar_por_codigo_barra(db, codigo_barra)
+    
+@router.get("/{produto_id}", response_model=ProdutoResponse)
+def obter_produto(produto_id: int,db: Session = Depends(get_db)):
+    return service.get(db, produto_id)
 
 @router.patch("/{produto_id}", response_model=ProdutoResponse)
 def atualizar_produto(produto_id: int, update_produto:ProdutoUpdate, db: Session = Depends(get_db)):
@@ -43,5 +47,6 @@ def atualizar_produto(produto_id: int, update_produto:ProdutoUpdate, db: Session
 def deletar_produto(produto_id: int, db: Session = Depends(get_db)):
     service.delete(db, produto_id)
     return None 
+
 
 

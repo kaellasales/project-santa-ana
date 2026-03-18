@@ -15,7 +15,7 @@ class Venda(Base):
     __tablename__ = "vendas"
     
     id = Column(Integer, primary_key=True, index=True)
-    # usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     data_venda = Column(DateTime(timezone=True), nullable=True) 
     total = Column(Float, default=0.0, nullable=False)
     status = Column(SAEnum(VendaStatus), default=VendaStatus.ABERTA, nullable=False)
@@ -23,7 +23,7 @@ class Venda(Base):
     acrescimo = Column(Float, default=0.0, nullable=False)
 
     # Relacionamentos
-    # usuario = relationship("Usuario", back_populates="vendas")
+    usuario = relationship("Usuario", back_populates="vendas")
     itens = relationship("ItemVenda", back_populates="venda", cascade="all, delete-orphan")
     forma_pagamento = relationship("FormaPagamento", back_populates="venda", uselist=False)
     movimentacoes = relationship("MovimentacaoEstoque", back_populates="venda")

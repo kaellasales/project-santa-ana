@@ -30,3 +30,7 @@ def relatorio_margem(data_inicio: datetime, data_fim: datetime, db: Session = De
 @router.get("/caixa")
 def relatorio_caixa(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
     return service.relatorio_caixa(db, data_inicio, data_fim)
+
+@router.get("/geral")
+def relatorio_geral(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
+    return service.relatorio_geral(db, data_inicio, data_fim)

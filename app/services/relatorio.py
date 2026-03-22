@@ -98,3 +98,31 @@ class RelatorioService:
                 for t in turnos
             ]
         }
+
+    def relatorio_geral(self, db: Session, data_inicio: datetime, data_fim: datetime):
+        resumo = self.repository.resumo_vendas(db, data_inicio, data_fim)
+        por_forma = self.repository.por_forma_pagamento(db, data_inicio, data_fim)
+        mais_vendidos = self.repository.produtos_mais_vendidos(db, data_inicio, data_fim)
+        margem = self.repository.margem_por_produto(db, data_inicio, data_fim)
+
+        receita_bruta = sum(float(p.receita or 0) for p in margem)
+        custo_total = sum(float(p.custo or 0) for p in margem)
+        lucro_bruto = receita_bruta - custo_total
+
+        forma_pagamento = {"DINHEIRO": 0.0, "CARTAO_DEBITO": 0.0, "CARTAO_CREDITO": 0.0, "PIX": 0.0}
+        for item in por_forma:
+            forma_pagamento[item.tipo.value] = float(item.total or 0)
+
+        produto_top = mais_vendidos[0].nome if mais_vendidos else None
+
+        return {
+            "total_vendas": float(resumo.total_vendas or 0),
+            "ticket_medio": float(resumo.ticket_medio or 0),
+            "lucro_bruto": lucro_bruto,
+            "produto_top": produto_top,
+            "por_forma_pagamento": forma_pagamento,
+            "top_produtos": [
+                {"nome": p.nome, "quantidade_total": p.quantidade_total}
+                for p in mais_vendidos
+            ]
+        }

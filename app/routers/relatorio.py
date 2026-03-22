@@ -26,3 +26,7 @@ def relatorio_estoque(db: Session = Depends(get_db)):
 @router.get("/margem")
 def relatorio_margem(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
     return service.relatorio_margem(db, data_inicio, data_fim)
+
+@router.get("/caixa")
+def relatorio_caixa(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
+    return service.relatorio_caixa(db, data_inicio, data_fim)

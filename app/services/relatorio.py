@@ -74,3 +74,27 @@ class RelatorioService:
                 for p in produtos
             ]
         }
+
+    def relatorio_caixa(self, db: Session, data_inicio: datetime, data_fim: datetime):
+        turnos = self.repository.resumo_caixa(db, data_inicio, data_fim)
+
+        total_faturado = sum(t.total_vendas or 0 for t in turnos)
+        diferenca_total = sum(t.diferenca or 0 for t in turnos)
+
+        return {
+            "turnos_no_periodo": len(turnos),
+            "total_faturado": total_faturado,
+            "diferenca_total": diferenca_total,
+            "historico": [
+                {
+                    "id": t.id,
+                    "abertura": t.data_abertura,
+                    "fechamento": t.data_fechamento,
+                    "valor_inicial": t.valor_inicial,
+                    "total_faturado": t.total_vendas,
+                    "diferenca": t.diferenca,
+                    "status": t.status.value
+                }
+                for t in turnos
+            ]
+        }

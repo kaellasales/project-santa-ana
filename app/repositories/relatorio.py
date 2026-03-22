@@ -68,3 +68,10 @@ class RelatorioRepository:
             Venda.status == VendaStatus.CONCLUIDA,
             Venda.data_venda.between(data_inicio, data_fim)
         ).group_by(Produto.nome).all()
+
+    def resumo_caixa(self, db: Session, data_inicio: datetime, data_fim: datetime):
+        from app.models.turno import Turno, TurnoStatus
+        return db.query(Turno).filter(
+            Turno.data_abertura >= data_inicio,
+            Turno.data_abertura <= data_fim
+        ).order_by(Turno.data_abertura.desc()).all()

@@ -56,3 +56,15 @@ class RelatorioRepository:
 
     def listagem_produtos(self, db: Session):
         return db.query(Produto).filter(Produto.ativo).order_by(Produto.nome).all()
+
+    def margem_por_produto(self, db: Session, data_inicio: datetime, data_fim: datetime):
+        return db.query(
+            Produto.nome,
+            func.sum(ItemVenda.quantidade).label("qtd_vendida"),
+            func.sum(ItemVenda.subtotal).label("receita"),
+            func.sum(Produto.preco_compra * ItemVenda.quantidade).label("custo")
+        ).join(ItemVenda, ItemVenda.produto_id == Produto.id
+        ).join(Venda, Venda.id == ItemVenda.venda_id).filter(
+            Venda.status == VendaStatus.CONCLUIDA,
+            Venda.data_venda.between(data_inicio, data_fim)
+        ).group_by(Produto.nome).all()

@@ -48,3 +48,29 @@ class RelatorioService:
                 for p in listagem
             ]
         }
+
+    def relatorio_margem(self, db: Session, data_inicio: datetime, data_fim: datetime):
+        produtos = self.repository.margem_por_produto(db, data_inicio, data_fim)
+
+        receita_bruta = sum(float(p.receita or 0) for p in produtos)
+        custo_total = sum(float(p.custo or 0) for p in produtos)
+        lucro_bruto = receita_bruta - custo_total
+        margem_percentual = round((lucro_bruto / receita_bruta) * 100, 2) if receita_bruta > 0 else 0
+
+        return {
+            "receita_bruta": receita_bruta,
+            "custo_total": custo_total,
+            "lucro_bruto": lucro_bruto,
+            "margem_percentual": margem_percentual,
+            "detalhamento": [
+                {
+                    "nome": p.nome,
+                    "qtd_vendida": p.qtd_vendida,
+                    "receita": float(p.receita or 0),
+                    "custo": float(p.custo or 0),
+                    "lucro": float(p.receita or 0) - float(p.custo or 0),
+                    "margem_percentual": round(((float(p.receita or 0) - float(p.custo or 0)) / float(p.receita or 1)) * 100, 2)
+                }
+                for p in produtos
+            ]
+        }

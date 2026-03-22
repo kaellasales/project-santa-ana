@@ -12,6 +12,7 @@ class Produto(Base):
     preco_compra = Column(Numeric(10,2), nullable=True)
     preco_venda = Column(Numeric(10,2), nullable=False)
     estoque = Column(Integer, nullable=False, default=0)
+    estoque_minimo = Column(Integer, default=10, nullable=False)
     categoria_id = Column(Integer, ForeignKey("categorias.id", ondelete="RESTRICT"), nullable=False)
     
     categoria = relationship("Categoria", back_populates="produtos")

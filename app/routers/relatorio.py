@@ -18,3 +18,7 @@ def relatorio_vendas(
     db: Session = Depends(get_db)
 ):
     return service.relatorio_vendas(db, data_inicio, data_fim)
+
+@router.get("/estoque")
+def relatorio_estoque(db: Session = Depends(get_db)):
+    return service.relatorio_estoque(db)

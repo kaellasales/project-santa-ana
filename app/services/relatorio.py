@@ -26,3 +26,25 @@ class RelatorioService:
                 for p in mais_vendidos
             ]
         }
+
+    def relatorio_estoque(self, db: Session):
+        resumo = self.repository.resumo_estoque(db)
+        listagem = self.repository.listagem_produtos(db)
+
+        return {
+            "produtos_ativos": resumo["produtos_ativos"],
+            "inativos": resumo["inativos"],
+            "estoque_baixo": resumo["estoque_baixo"],
+            "listagem": [
+                {
+                    "id": p.id,
+                    "nome": p.nome,
+                    "categoria": p.categoria_nome,
+                    "estoque": p.estoque,
+                    "estoque_minimo": p.estoque_minimo,
+                    "preco_compra": float(p.preco_compra) if p.preco_compra else None,
+                    "preco_venda": float(p.preco_venda)
+                }
+                for p in listagem
+            ]
+        }

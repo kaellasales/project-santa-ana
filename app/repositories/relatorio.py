@@ -38,3 +38,21 @@ class RelatorioRepository:
             Venda.status == VendaStatus.CONCLUIDA,
             Venda.data_venda.between(data_inicio, data_fim)
         ).group_by(Produto.nome).order_by(func.sum(ItemVenda.quantidade).desc()).limit(limite).all()
+
+    
+    def resumo_estoque(self, db: Session):
+        produtos_ativos = db.query(func.count(Produto.id)).filter(Produto.ativo).scalar()
+        inativos = db.query(func.count(Produto.id)).filter(~Produto.ativo).scalar()
+        estoque_baixo = db.query(func.count(Produto.id)).filter(
+            Produto.ativo,
+            Produto.estoque <= Produto.estoque_minimo
+        ).scalar()
+
+        return {
+            "produtos_ativos": produtos_ativos,
+            "inativos": inativos,
+            "estoque_baixo": estoque_baixo
+        }
+
+    def listagem_produtos(self, db: Session):
+        return db.query(Produto).filter(Produto.ativo).order_by(Produto.nome).all()

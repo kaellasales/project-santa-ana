@@ -48,7 +48,7 @@ class UsuarioService:
 
     def deactivate(self, db: Session, usuario_id: int):
         usuario = self.get(db, usuario_id)
-        obj = self.repository.deactivate(db, usuario_id)
+        obj = self.repository.desativar(db, usuario_id)
         db.commit()
         return obj
 

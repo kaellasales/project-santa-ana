@@ -5,9 +5,6 @@ from app.schemas.produto import ProdutoCreate, ProdutoResponse, ProdutoUpdate
 from app.repositories.produto import ProdutoRepository
 from app.services.produto import ProdutoService
 from app.repositories.movimentacao import MovimentacaoEstoqueRepository
-from app.models.produto import Produto
-from app.core.exceptions import ProdutoNotFoundError
-
 
 router = APIRouter()
 repo = ProdutoRepository()
@@ -48,5 +45,7 @@ def deletar_produto(produto_id: int, db: Session = Depends(get_db)):
     service.delete(db, produto_id)
     return None 
 
-
+@router.patch("/{produto_id}/reativar", response_model=ProdutoResponse)
+def reativar_produto(produto_id: int, db: Session = Depends(get_db)):
+    return service.reativar(db, produto_id)
 

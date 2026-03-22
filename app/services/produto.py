@@ -52,7 +52,7 @@ class ProdutoService:
 
     def delete(self, db: Session, produto_id: int):
         produto = self._get_or_raise(db, produto_id)
-        self.repository.deactivate(db, produto_id)
+        self.repository.desativar(db, produto_id)
         db.commit()
     
     def buscar_por_nome(self, db:Session, nome: str):
@@ -80,3 +80,10 @@ class ProdutoService:
             if "check_estoque_non_negative" in str(e.orig):
                 raise EstoqueInsuficienteError("Não há estoque suficiente para esta venda.")
             raise e 
+    
+    def reativar(self, db: Session, produto_id: int):
+        obj = self.repository.reativar(db, produto_id)
+        if not obj:
+            raise ProdutoNotFoundError()
+        db.commit()
+        return obj

@@ -30,5 +30,5 @@ class CategoriaService:
 
     def delete(self, db: Session, categoria_id: int):
         categoria = self._get_or_raise(db, categoria_id)
-        self.repository.deactivate(db, categoria_id)
+        self.repository.desativar(db, categoria_id)
         db.commit()

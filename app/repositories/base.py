@@ -43,7 +43,7 @@ class BaseRepository(Generic[T]):
             db.flush()
         return obj
 
-    def deactivate(self, db: Session, id: int) -> T | None:
+    def desativar(self, db: Session, id: int) -> T | None:
         obj = self.get(db, id)
         if obj:
             obj.ativo = False

@@ -34,3 +34,15 @@ def relatorio_caixa(data_inicio: datetime, data_fim: datetime, db: Session = Dep
 @router.get("/geral")
 def relatorio_geral(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
     return service.relatorio_geral(db, data_inicio, data_fim)
+
+@router.get("/vendas/exportar")
+def exportar_vendas(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
+    return service.exportar_vendas_excel(db, data_inicio, data_fim)
+
+@router.get("/estoque/exportar")
+def exportar_estoque(db: Session = Depends(get_db)):
+    return service.exportar_estoque_excel(db)
+
+@router.get("/margem/exportar")
+def exportar_margem(data_inicio: datetime, data_fim: datetime, db: Session = Depends(get_db)):
+    return service.exportar_margem_excel(db, data_inicio, data_fim)

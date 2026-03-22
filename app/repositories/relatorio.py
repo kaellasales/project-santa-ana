@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.venda import Venda, VendaStatus
-from app.models.pagamento import FormaPagamento, TipoPagamento
+from app.models.pagamento import FormaPagamento
 from app.models.itemVenda import ItemVenda
 from app.models.produto import Produto
 from datetime import datetime
@@ -75,3 +75,4 @@ class RelatorioRepository:
             Turno.data_abertura >= data_inicio,
             Turno.data_abertura <= data_fim
         ).order_by(Turno.data_abertura.desc()).all()
+

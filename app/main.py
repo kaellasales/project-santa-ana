@@ -4,7 +4,7 @@ from app.core.handlers import setup_exception_handlers
 from app.core.seed import seed_categorias, seed_usuario_admin
 from app.core.database import SessionLocal
 from app.core.dependencies import get_usuario_logado
-
+from app.routers import relatorio
 
 app = FastAPI(
     title="API Farmácia Santa Ana",
@@ -28,6 +28,8 @@ app.include_router(usuario.router, prefix="/usuarios", tags=["Usuarios"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"]) 
 app.include_router(movimentacao.router, prefix="/movimentacoes", tags=["Movimentacoes"], **protected)
 app.include_router(turno.router, prefix="/turnos", tags=["Turnos"], **protected)
+app.include_router(relatorio.router, prefix="/relatorios", tags=["Relatorios"], **protected)
+
 @app.on_event("startup")
 def startup():
     db = SessionLocal()

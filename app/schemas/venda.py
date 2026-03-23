@@ -22,6 +22,7 @@ class VendaResponse(VendaBase):
     id: int
     turno_id: int
     usuario_id: int
+    usuario_nome: str | None = None
     data_venda: datetime | None = None
     total: float
     status: str

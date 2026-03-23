@@ -19,6 +19,7 @@ class TurnoAtivoResponse(BaseModel):
     valor_inicial: float
     total_vendas: float
     quantidade_vendas: int
+    usuario_nome: str | None = None
 
     class ConfigDict:
         from_attributes = True

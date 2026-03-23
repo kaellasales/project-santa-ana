@@ -31,3 +31,7 @@ def fechar_turno(dados: TurnoFechar, db: Session = Depends(get_db), current_user
 @router.get("/historico", response_model=list[TurnoResumoResponse])
 def listar_historico(db: Session = Depends(get_db), current_user=Depends(get_usuario_logado)):
     return service.listar_por_usuario(db, current_user.id)
+
+@router.get("/historico/todos", response_model=list[TurnoResumoResponse])
+def listar_historico_todos(db=Depends(get_db), current_user=Depends(get_usuario_logado)):
+    return service.listar_todos(db)

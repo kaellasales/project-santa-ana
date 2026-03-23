@@ -24,3 +24,6 @@ class TurnoRepository(BaseRepository[TurnoModel]):
             .order_by(TurnoModel.data_abertura.desc())
             .all()
         )
+    
+    def listar_todos(self, db: Session):
+        return db.query(TurnoModel).order_by(TurnoModel.data_abertura.desc()).all()

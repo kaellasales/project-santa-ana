@@ -28,7 +28,10 @@ class TurnoService:
         return obj
 
     def get_turno_ativo(self, db: Session, usuario_id: int):
-        return self.repository.get_turno_ativo(db, usuario_id)
+        turno = self.repository.get_turno_ativo(db, usuario_id)
+        if turno:
+            turno.usuario_nome = turno.usuario.nome if turno.usuario else None
+        return turno
 
     def fechar(self, db: Session, dados: TurnoFechar, usuario_id: int):
         turno = self.repository.get_turno_ativo(db, usuario_id)
@@ -70,6 +73,12 @@ class TurnoService:
 
     def listar_por_usuario(self, db: Session, usuario_id: int):
         return self.repository.listar_por_usuario(db, usuario_id)
+    
+    def listar_todos(self, db: Session):
+        turnos = self.repository.listar_todos(db)
+        for turno in turnos:
+            turno.usuario_nome = turno.usuario.nome if turno.usuario else None
+        return turnos
 
     def _calcular_por_forma_pagamento(self, vendas) -> dict[str, float]:
         totais = {

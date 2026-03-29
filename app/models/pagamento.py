@@ -2,6 +2,9 @@ from sqlalchemy import Column, Integer, Float, String, ForeignKey, Enum as SAEnu
 from enum import Enum as PyEnum
 from app.core.database import Base
 from sqlalchemy.orm import relationship
+import uuid                                    
+from sqlalchemy.dialects.postgresql import UUID 
+
 
 class TipoPagamento(PyEnum):
     DINHEIRO = "DINHEIRO"
@@ -9,10 +12,12 @@ class TipoPagamento(PyEnum):
     CARTAO_CREDITO = "CARTAO_CREDITO"
     PIX = "PIX"
 
+
 class FormaPagamento(Base):
     __tablename__ = "formas_pagamento"
 
     id = Column(Integer, primary_key=True, index=True)
+    id_offline = Column(UUID(as_uuid=True), unique=True, nullable=True, index=True)  
     venda_id = Column(Integer, ForeignKey("vendas.id", ondelete="RESTRICT"), nullable=False)
     tipo = Column(SAEnum(TipoPagamento), nullable=False)
     valor_recebido = Column(Float, nullable=False)

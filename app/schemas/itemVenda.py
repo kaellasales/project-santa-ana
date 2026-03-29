@@ -1,25 +1,20 @@
-from pydantic import BaseModel, Field
-from pydantic import field_validator
+from pydantic import BaseModel, Field, field_validator
+from uuid import UUID                          
+
 
 class ItemVendaBase(BaseModel):
     quantidade: int = Field(gt=0)
 
 class ItemVendaCreate(ItemVendaBase):
     produto_id: int
-    
+
     @field_validator("quantidade")
     @classmethod
     def validar_quantidade(cls, v):
         if v <= 0:
             raise ValueError("Quantidade deve ser maior que 0")
         return v
-    
-    # @field_validator("preco_unitario")
-    # @classmethod
-    # def validar_preco(cls, v):
-    #     if v <= 0:
-    #         raise ValueError("Preço unitário deve ser maior que 0")
-    #     return v
+
 
 class ItemVendaResponse(ItemVendaBase):
     id: int
@@ -34,3 +29,9 @@ class ItemVendaResponse(ItemVendaBase):
 
 class ItemVendaUpdate(BaseModel):
     quantidade: int | None = Field(None, gt=0)
+
+
+class ItemVendaSync(BaseModel):
+    id_offline: UUID
+    produto_id: int
+    quantidade: int = Field(gt=0)

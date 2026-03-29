@@ -1,12 +1,13 @@
 from pydantic import BaseModel, Field
-from pydantic import field_validator
 from datetime import datetime
-from typing import Optional, List
-from app.schemas.itemVenda import ItemVendaResponse
-from app.schemas.pagamento import FormaPagamentoResponse
+from typing import List
+from uuid import UUID                          
+from app.schemas.itemVenda import ItemVendaResponse, ItemVendaSync          
+from app.schemas.pagamento import FormaPagamentoResponse, FormaPagamentoSync 
+
+
 class VendaBase(BaseModel):
     pass
-    # usuario_id: int = Field(gt=0)
 
 
 class VendaCreate(VendaBase):
@@ -18,6 +19,7 @@ class VendaUpdate(BaseModel):
     acrescimo: float | None = Field(None, ge=0)
     desconto: float | None = Field(None, ge=0)
 
+
 class VendaResponse(VendaBase):
     id: int
     turno_id: int
@@ -27,7 +29,7 @@ class VendaResponse(VendaBase):
     total: float
     status: str
     forma_pagamento: FormaPagamentoResponse | None = None
-    acrescimo: float | None = None  
+    acrescimo: float | None = None
     desconto: float | None = None
 
     class ConfigDict:
@@ -36,3 +38,13 @@ class VendaResponse(VendaBase):
 
 class VendaDetalhada(VendaResponse):
     itens: List[ItemVendaResponse] = []
+
+
+class VendaSync(BaseModel):
+    id_offline: UUID
+    data_venda: datetime
+    desconto: float = 0.0
+    acrescimo: float = 0.0
+    itens: List[ItemVendaSync]
+    pagamento: FormaPagamentoSync
+

@@ -1,16 +1,15 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
+from uuid import UUID                          
 from app.models.turno import TurnoStatus
 
 
 class TurnoAbrir(BaseModel):
     valor_inicial: float = Field(gt=0)
 
-
 class TurnoFechar(BaseModel):
     valor_informado: float = Field(ge=0)
     observacoes: str | None = Field(None, max_length=500)
-
 
 class TurnoAtivoResponse(BaseModel):
     id: int
@@ -24,15 +23,22 @@ class TurnoAtivoResponse(BaseModel):
     class ConfigDict:
         from_attributes = True
 
-
 class TurnoResumoResponse(TurnoAtivoResponse):
     data_fechamento: datetime | None = None
     valor_informado: float | None = None
     valor_esperado: float | None = None
     diferenca: float | None = None
     observacoes: str | None = None
-
     por_forma_pagamento: dict[str, float] = {}
 
     class ConfigDict:
         from_attributes = True
+
+
+class TurnoSync(BaseModel):
+    id_offline: UUID
+    valor_inicial: float = Field(gt=0)
+    data_abertura: datetime
+    data_fechamento: datetime | None = None    
+    valor_informado: float | None = None       
+    observacoes: str | None = None
